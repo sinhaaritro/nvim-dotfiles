@@ -5,8 +5,6 @@
 -- Use `:set all` to a list of all the options
 -- Use `:options` to a get a view of the options
 
-
-
 local opt = vim.opt
 
 opt.autowrite = true -- Enable auto write
@@ -20,12 +18,12 @@ opt.confirm = true -- Confirm to save changes before exiting modified buffer
 opt.cursorline = true -- Enable highlighting of the current line
 opt.expandtab = true -- Use spaces instead of tabs
 opt.fillchars = {
-  foldopen = "",
-  foldclose = "",
-  fold = " ",
-  foldsep = " ",
-  diff = "╱",
-  eob = " ",
+	foldopen = "",
+	foldclose = "",
+	fold = " ",
+	foldsep = " ",
+	diff = "╱",
+	eob = " ",
 }
 opt.foldlevel = 99
 opt.foldexpr = "v:lua.require'lazyvim.util'.ui.foldexpr()"
@@ -43,7 +41,7 @@ opt.jumpoptions = "view"
 opt.laststatus = 3 -- global statusline
 opt.linebreak = true -- Wrap lines at convenient points
 opt.list = true -- Show some invisible characters (tabs...
-opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+opt.listchars = { tab = "» ", leadmultispace = "» ", trail = "·", nbsp = "␣" }
 opt.mouse = "a" -- Enable mouse mode
 opt.number = true -- Print line number
 opt.numberwidth = 3 -- Min number line width
@@ -77,7 +75,7 @@ opt.updatetime = 200 -- Save swap file and trigger CursorHold
 opt.virtualedit = "block" -- Allow cursor to move where there is no text in visual block mode
 opt.wildmode = "longest:full,full" -- Command-line completion mode
 opt.winminwidth = 5 -- Minimum window width
-opt.wrap = false -- Disable line wrap
+opt.wrap = true -- Disable line wrap
 
 -- Fix markdown indentation settings
 vim.g.markdown_recommended_style = 0
