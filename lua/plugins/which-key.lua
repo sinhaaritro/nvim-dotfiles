@@ -1,21 +1,76 @@
 return {
 	{
 		"folke/which-key.nvim",
-		event = "VimEnter",
+		event = "VeryLazy",
 		opts = {
+			preset = "modern",
 			delay = 0,
-			mode = { "n", "v" }, -- NORMAL and VISUAL mode
-			prefix = "<leader>",
-			buffer = nil, -- Global mappings. Specify a buffer number for buffer local mappings
-			silent = true, -- use `silent` when creating keymaps
-			noremap = true, -- use `noremap` when creating keymaps
-			nowait = true, -- use `nowait` when creating keymaps
+			spec = {
+				{ "<leader>b", group = "[B]uffer", mode = { "n", "x" }, icon = " " },
+				{ "<leader>c", group = "[C]ode", mode = { "n", "x" }, icon = " " },
+				{ "<leader>d", group = "[D]ebug", mode = { "n", "x" }, icon = " " },
+				{ "<leader>f", group = "[F]ind", mode = { "n" }, icon = " " },
+				{ "<leader>g", group = "[G]it", mode = { "n", "x" }, icon = " " },
+				{ "<leader>h", group = "[H]arpoon", mode = { "n" }, icon = " " },
+				{ "<leader>q", group = "[Q]uit", mode = { "n" }, icon = "󰆓 " },
+				{ "<leader>r", group = "[R]ename", icon = "󰑕 " },
+				{ "<leader>s", group = "[S]earch", mode = { "n", "x" }, icon = " " },
+				{ "<leader>t", group = "[T]est", mode = { "n", "x" }, icon = "󰙨 " },
+				{ "<leader>u", group = "[U]i", mode = { "n", "x" }, icon = "  " },
+				{ "<leader>w", group = "[W]indows", icon = " " },
+				{ "<leader>x", group = "[]Diagonastic", icon = "󰝖 " },
+				{ "<leader><Tab>", group = "[Tabs]", icon = "󰓩 " },
+				-- { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
+			},
+			-- show a warning when issues were detected with your mappings
+			notify = true,
 			icons = {
-				-- set icon mappings to true if you have a Nerd Font
-				mappings = vim.g.have_nerd_font,
-				-- If you are using a Nerd Font: set icons.keys to an empty table which will use the
-				-- default which-key.nvim defined Nerd Font icons, otherwise define a string table
-				keys = vim.g.have_nerd_font and {} or {
+				breadcrumb = "»", -- symbol used in the command line area that shows your active key combo
+				separator = "➜", -- symbol used between a key and it's label
+				group = "+", -- symbol prepended to a group
+				ellipsis = "…",
+				-- set to false to disable all mapping icons,
+				-- both those explicitly added in a mapping
+				-- and those from rules
+				mappings = true,
+				--- See `lua/which-key/icons.lua` for more details
+				--- Set to `false` to disable keymap icons from rules
+				---@type wk.IconRule[]|false
+				rules = {},
+				-- use the highlights from mini.icons
+				-- When `false`, it will use `WhichKeyIcon` instead
+				colors = true,
+				-- used by key format
+				keys = vim.g.have_nerd_font and {
+					Up = " ",
+					Down = " ",
+					Left = " ",
+					Right = " ",
+					C = "󰘴 ",
+					M = "󰘵 ",
+					D = "󰘳 ",
+					S = "󰘶 ",
+					CR = "󰌑 ",
+					Esc = "󱊷 ",
+					ScrollWheelDown = "󱕐 ",
+					ScrollWheelUp = "󱕑 ",
+					NL = "󰌑 ",
+					BS = "󰁮",
+					Space = "󱁐 ",
+					Tab = "󰌒 ",
+					F1 = "󱊫",
+					F2 = "󱊬",
+					F3 = "󱊭",
+					F4 = "󱊮",
+					F5 = "󱊯",
+					F6 = "󱊰",
+					F7 = "󱊱",
+					F8 = "󱊲",
+					F9 = "󱊳",
+					F10 = "󱊴",
+					F11 = "󱊵",
+					F12 = "󱊶",
+				} or {
 					Up = "<Up> ",
 					Down = "<Down> ",
 					Left = "<Left> ",
@@ -45,19 +100,6 @@ return {
 					F11 = "<F11>",
 					F12 = "<F12>",
 				},
-			},
-
-			-- Document existing key chains
-			spec = {
-				{ "<leader>c", group = "[C]ode", mode = { "n", "x" }, icon = " " },
-				{ "<leader>d", group = "[D]ocument", icon = "󰈙 " },
-				{ "<leader>h", group = "[G]oto", mode = { "n" }, icon = " " },
-				{ "<leader>h", group = "[H]arpoon", mode = { "n" }, icon = " " },
-				{ "<leader>r", group = "[R]ename", icon = "󰑕 " },
-				{ "<leader>s", group = "[S]earch", icon = " " },
-				{ "<leader>w", group = "[W]orkspace", icon = " " },
-				{ "<leader>t", group = "[T]oggle", icon = "󰈙 " },
-				-- { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
 			},
 		},
 		keys = {
