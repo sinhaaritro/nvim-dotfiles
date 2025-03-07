@@ -1,5 +1,7 @@
 return {
 	lsp = {},
-	formatter = {},
+	formatter = {
+		formatters = { "markdownlint" },
+	},
 	linter = { "markdownlint" },
 }

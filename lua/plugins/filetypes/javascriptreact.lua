@@ -1,5 +1,7 @@
 return {
 	lsp = {},
-	formatter = {},
+	formatter = {
+		formatters = { "prettier" },
+	},
 	linter = { "eslint_d" },
 }
