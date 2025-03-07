@@ -1,8 +1,8 @@
 return {
 	"neovim/nvim-lspconfig", -- LSP client configuration
-	event = { "BufReadPre", "BufNewFile" }, -- Load on BufReadPre and BufNewFile
+	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
-		"mason.nvim",
+		"williamboman/mason.nvim",
 		{ "williamboman/mason-lspconfig.nvim", config = function() end },
 	},
   -- stylua: ignore
@@ -83,36 +83,58 @@ return {
 			timeout_ms = nil,
 		},
 	},
-	config = function()
-		local lspconfig = require("lspconfig")
-		lspconfig.lua_ls.setup({
-			-- cmd = { ... },
-			-- filetypes = { ... },
-			-- capabilities = {},
-			settings = {
-				Lua = {
-					completion = {
-						callSnippet = "Replace",
-					},
-					-- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-					diagnostics = {
-						-- Get the language server to recognize the `vim` global
-						globals = {
-							"vim",
-							"require",
-						},
-					},
-					workspace = {
-						-- Make the server aware of Neovim runtime files
-						library = vim.api.nvim_get_runtime_file("", true),
-					},
-					-- Do not send telemetry data containing a randomized but unique identifier
-					telemetry = {
-						enable = false,
-					},
-				},
-			},
+	config = function(_, opts)
+		vim.diagnostic.config(opts.diagnostics)
+
+		-- Autocommand to load configurations based on filetype
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "*", -- Matches all filetypes
+			callback = function(args)
+				local ft = args.match -- e.g., "lua", "typescript"
+				local config_path = "plugins.filetypes." .. ft
+
+				-- Load filetype-specific config
+				local ok, config = pcall(require, config_path)
+				if not ok then
+					return -- Skip if no config exists
+				end
+
+				-- Proceed if an LSP server is specified in the config
+				if config.lsp then
+					local lspconfig = require("lspconfig")
+					local mason_lspconfig = require("mason-lspconfig")
+					local mason_registry = require("mason-registry")
+					local server = config.lsp.server -- e.g., "ts_ls"
+					local settings = config.lsp.settings or {}
+
+					-- Map the lspconfig server name to the Mason package name
+					local mason_server_name = mason_lspconfig.get_mappings().lspconfig_to_mason[server]
+					if not mason_server_name then
+						vim.notify("No Mason package found for " .. server, vim.log.levels.WARN)
+						return
+					end
+
+					-- Check if the server is already installed
+					if not mason_registry.is_installed(mason_server_name) then
+						-- Notify and install the server
+						vim.notify("Installing LSP server: " .. mason_server_name, vim.log.levels.INFO)
+						require("mason.api.command").MasonInstall({ mason_server_name })
+
+						-- Delay the setup to ensure installation completes
+						vim.defer_fn(function()
+							mason_registry.refresh() -- Update the registry after installation
+							lspconfig[server].setup(settings) -- Set up the LSP server
+							vim.notify(
+								"LSP server " .. mason_server_name .. " installed and set up",
+								vim.log.levels.INFO
+							)
+						end, 1000) -- Wait 1 second
+					else
+						-- If already installed, set up immediately
+						lspconfig[server].setup(settings)
+					end
+				end
+			end,
 		})
-		lspconfig.ts_ls.setup({}) -- Configure the 'ts_ls' LSP (TypeScript Language Server)
 	end,
 }
