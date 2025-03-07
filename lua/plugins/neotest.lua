@@ -6,6 +6,7 @@ return {
 			"nvim-lua/plenary.nvim",
 			"antoinemadec/FixCursorHold.nvim",
 			"nvim-treesitter/nvim-treesitter",
+			"marilari88/neotest-vitest",
 		},
     -- stylua: ignore
     keys = {
@@ -34,7 +35,9 @@ return {
 				-- Enable output panel
 				output = { open_on_run = true, open_on_failure = true },
 				-- Define custom adapter configurations.
-				adapters = {},
+				adapters = {
+					require("neotest-vitest"),
+				},
 			})
 		end,
 	},
