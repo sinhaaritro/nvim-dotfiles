@@ -2,7 +2,7 @@ return {
 	{ -- Autoformat
 		"stevearc/conform.nvim",
 		event = { "BufReadPre", "BufNewFile" },
-		dependencies = { "mason.nvim" },
+		dependencies = { "williamboman/mason.nvim" },
 		cmd = "ConformInfo",
 		-- lazy = false,
 		keys = {

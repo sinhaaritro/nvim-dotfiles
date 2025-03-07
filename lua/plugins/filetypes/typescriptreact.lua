@@ -22,10 +22,7 @@ return {
 	formatter = {
 		formatters = { "prettier" },
 	},
-	linter = {
-		-- Example: could be something like
-		-- linters = { "eslint" }
-	},
+	linter = { "eslint_d" },
 	dap = {
 		-- Example: could be something like
 		-- adapter = "js-debug-adapter"

@@ -25,10 +25,7 @@ return {
 	formatter = {
 		formatters = { "stylua" },
 	},
-	linter = {
-		-- Example: could be something like
-		-- linters = { "luacheck" }
-	},
+	linter = { "luacheck" },
 	dap = {
 		-- Example: could be something like
 		-- adapter = "lua-dap"

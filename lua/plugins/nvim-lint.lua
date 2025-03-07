@@ -2,54 +2,64 @@ return {
 	{
 		"mfussenegger/nvim-lint",
 		events = { "BufWritePost", "BufReadPost", "InsertLeave" },
-		opts = {
-			-- Event to trigger linters
-			events = { "BufWritePost", "BufReadPost", "InsertLeave" },
-			linters_by_ft = {
-				fish = { "fish" },
-				lua = { "luacheck" },
-				javascript = { "eslint_d" },
-				typescript = { "eslint_d" },
-				javascriptreact = { "eslint_d" },
-				typescriptreact = { "eslint_d" },
-				markdown = { "markdownlint" },
-				-- Use the "*" filetype to run linters on all filetypes.
-				-- ['*'] = { 'global linter' },
-				-- Use the "_" filetype to run linters on filetypes that don't have other linters configured.
-				-- ['_'] = { 'fallback linter' },
-				-- ["*"] = { "typos" },
-			},
-			-- LazyVim extension to easily override linter options
-			-- or add custom linters.
-			---@type table<string,table>
-			linters = {
-				-- -- Example of using selene only when a selene.toml file is present
-				-- selene = {
-				--   -- `condition` is another LazyVim extension that allows you to
-				--   -- dynamically enable/disable linters based on the context.
-				--   condition = function(ctx)
-				--     return vim.fs.find({ "selene.toml" }, { path = ctx.filename, upward = true })[1]
-				--   end,
-				-- },
-			},
-		},
-		config = function(_, opts)
-			local M = {}
-
+		dependencies = { "williamboman/mason.nvim" },
+		config = function()
 			local lint = require("lint")
-			for name, linter in pairs(opts.linters) do
-				if type(linter) == "table" and type(lint.linters[name]) == "table" then
-					lint.linters[name] = vim.tbl_deep_extend("force", lint.linters[name], linter)
-					if type(linter.prepend_args) == "table" then
-						lint.linters[name].args = lint.linters[name].args or {}
-						vim.list_extend(lint.linters[name].args, linter.prepend_args)
-					end
-				else
-					lint.linters[name] = linter
+			local mason_registry = require("mason-registry")
+
+			-- Initialize lint.linters_by_ft as an empty table
+			lint.linters_by_ft = {}
+
+			-- Helper function to install a linter if not present
+			local function install_linter(linter_name)
+				if not mason_registry.is_installed(linter_name) then
+					vim.notify("Installing linter: " .. linter_name, vim.log.levels.INFO)
+					vim.fn.system({ "nvim", "-c", "MasonInstall " .. linter_name, "-c", "q" })
+					return true -- Installation triggered
+				end
+				return false -- Already installed
+			end
+
+			-- Helper function to add linter to lint.linters_by_ft
+			local function add_linter_to_ft(filetype, linter_name)
+				lint.linters_by_ft[filetype] = lint.linters_by_ft[filetype] or {}
+				if not vim.tbl_contains(lint.linters_by_ft[filetype], linter_name) then
+					table.insert(lint.linters_by_ft[filetype], linter_name)
 				end
 			end
-			lint.linters_by_ft = opts.linters_by_ft
 
+			-- Dynamic linter setup via FileType event
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "*",
+				callback = function(args)
+					local ft = args.match
+					local config_path = "plugins.filetypes." .. ft
+					local ok, config = pcall(require, config_path)
+					if not ok or not config.linter then
+						return
+					end
+
+					for _, linter_name in ipairs(config.linter) do
+						if install_linter(linter_name) then
+							-- Delay setup to allow installation
+							vim.defer_fn(function()
+								mason_registry.refresh()
+								add_linter_to_ft(ft, linter_name)
+								vim.notify("Linter " .. linter_name .. " installed for " .. ft, vim.log.levels.INFO)
+								lint.try_lint() -- Trigger linting after installation
+							end, 2000)
+						else
+							-- Add immediately if already installed
+							add_linter_to_ft(ft, linter_name)
+						end
+					end
+				end,
+			})
+
+			-- Linting logic module
+			local M = {}
+
+			-- Debounce function to prevent excessive linting
 			function M.debounce(ms, fn)
 				local timer = vim.uv.new_timer()
 				return function(...)
@@ -61,52 +71,39 @@ return {
 				end
 			end
 
+			-- Core linting function
 			function M.lint()
-				-- Use nvim-lint's logic first:
-				-- * checks if linters exist for the full filetype first
-				-- * otherwise will split filetype by "." and add all those linters
-				-- * this differs from conform.nvim which only uses the first filetype that has a formatter
 				local names = lint._resolve_linter_by_ft(vim.bo.filetype)
-
-				-- Create a copy of the names table to avoid modifying the original.
 				names = vim.list_extend({}, names)
-
-				-- Add fallback linters.
 				if #names == 0 then
 					vim.list_extend(names, lint.linters_by_ft["_"] or {})
 				end
-
-				-- Add global linters.
 				vim.list_extend(names, lint.linters_by_ft["*"] or {})
-
-				-- Filter out linters that don't exist or don't match the condition.
 				local ctx = { filename = vim.api.nvim_buf_get_name(0) }
 				ctx.dirname = vim.fn.fnamemodify(ctx.filename, ":h")
 				names = vim.tbl_filter(function(name)
 					local linter = lint.linters[name]
 					if not linter then
-						LazyVim.warn("Linter not found: " .. name, { title = "nvim-lint" })
+						vim.notify("Linter not found: " .. name, vim.log.levels.WARN, { title = "nvim-lint" })
 					end
 					return linter and not (type(linter) == "table" and linter.condition and not linter.condition(ctx))
 				end, names)
-
-				-- Run linters.
 				if #names > 0 then
 					lint.try_lint(names)
 				end
 			end
 
-			vim.api.nvim_create_autocmd(opts.events, {
+			-- Set up linting triggers with debounce
+			vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost", "InsertLeave" }, {
 				group = vim.api.nvim_create_augroup("nvim-lint", { clear = true }),
 				callback = M.debounce(100, M.lint),
 			})
 
-			-- Show linters for the current buffer's file type
+			-- Optional: LintInfo command for debugging
 			vim.api.nvim_create_user_command("LintInfo", function()
 				local filetype = vim.bo.filetype
-				local linters = require("lint").linters_by_ft[filetype]
-
-				if linters then
+				local linters = lint.linters_by_ft[filetype] or {}
+				if #linters > 0 then
 					print("Linters for " .. filetype .. ": " .. table.concat(linters, ", "))
 				else
 					print("No linters configured for filetype: " .. filetype)
