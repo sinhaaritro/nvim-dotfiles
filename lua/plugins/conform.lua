@@ -1,94 +1,141 @@
 return {
-	{ -- Autoformat
-		"stevearc/conform.nvim",
-		event = { "BufReadPre", "BufNewFile" },
-		dependencies = { "williamboman/mason.nvim" },
-		cmd = "ConformInfo",
-		keys = {
-			{
-				"<leader>cf",
-				function()
-					require("conform").format({ async = true, lsp_format = "fallback" })
-				end,
-				mode = { "n", "v" },
-				desc = "[C]ode [F]ormat",
-			},
-		},
-		config = function()
-			local conform = require("conform")
-			local mason_registry = require("mason-registry")
+  { -- Autoformat
+    "stevearc/conform.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = { "williamboman/mason.nvim" },
+    cmd = "ConformInfo",
+    keys = {
+      {
+        "<leader>cf",
+        function()
+          require("conform").format({ async = true, lsp_format = "fallback" })
+        end,
+        mode = { "n", "v" },
+        desc = "[C]ode [F]ormat",
+      },
+    },
+    config = function()
+      local conform = require("conform")
+      local mason_registry = require("mason-registry")
 
-			-- Basic setup for conform.nvim
-			conform.setup({
-				notify_on_error = false,
-				format_on_save = function(bufnr)
-					local disable_filetypes = { c = true, cpp = true }
-					local lsp_format_opt
-					if disable_filetypes[vim.bo[bufnr].filetype] then
-						lsp_format_opt = "never"
-					else
-						lsp_format_opt = "fallback"
-					end
-					return {
-						timeout_ms = 500,
-						lsp_format = lsp_format_opt,
-					}
-				end,
-			})
+      -- Basic setup for conform.nvim
+      conform.setup({
+        notify_on_error = false,
+        format_on_save = function(bufnr)
+          local disable_filetypes = { c = true, cpp = true }
+          local lsp_format_opt
+          if disable_filetypes[vim.bo[bufnr].filetype] then
+            lsp_format_opt = "never"
+          else
+            lsp_format_opt = "fallback"
+          end
+          return {
+            timeout_ms = 500,
+            lsp_format = lsp_format_opt,
+          }
+        end,
+      })
 
-			-- Dynamic formatter setup via FileType event
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "*",
-				callback = function(args)
-					local ft = args.match
-					local config_path = "plugins.filetypes." .. ft
-					local ok, config = pcall(require, config_path)
-					if not ok or not config.formatter then
-						return
-					end
+      -- Load filetypeconfig.lua from the root of the config directory
+      local config_dir = vim.fn.stdpath("config")
+      local filetypeconfig_path = config_dir .. "/filetypeconfig.lua"
+      local filetypeconfig = dofile(filetypeconfig_path) or { active_filetypes = {} }
+      local active_filetypes = filetypeconfig.active_filetypes or {}
 
-					local formatters = config.formatter.formatters
-					local options = config.formatter.options or {}
+      -- Collect formatter configurations and track missing files
+      local filetype_configs = {}
+      local missing_files = {}
 
-					-- Check and install formatters if not present
-					for _, formatter_name in ipairs(formatters) do
-						if not mason_registry.is_installed(formatter_name) then
-							vim.notify("Installing formatter: " .. formatter_name, vim.log.levels.INFO)
-							vim.fn.system({ "nvim", "-c", "MasonInstall " .. formatter_name, "-c", "q" })
-							-- Installation is asynchronous; user may need to wait before formatting
-						end
-					end
+      for _, ft in ipairs(active_filetypes) do
+        local filepath = config_dir .. "/lua/filetypes/" .. ft .. ".lua"
+        if vim.fn.filereadable(filepath) == 1 then
+          local config = require("filetypes." .. ft)
+          filetype_configs[ft] = config
+        else
+          table.insert(missing_files, ft)
+        end
+      end
 
-					-- Create entry for formatters_by_ft
-					local entry = {}
-					for i, fmt in ipairs(formatters) do
-						entry[i] = fmt
-					end
-					for k, v in pairs(options) do
-						entry[k] = v
-					end
-					conform.formatters_by_ft[ft] = entry
-				end,
-			})
+      -- Display a single warning for all missing files, if any
+      if #missing_files > 0 then
+        local warning_msg = "Warning: The following filetype configurations were not found: " ..
+        table.concat(missing_files, ", ")
+        vim.notify(warning_msg, vim.log.levels.WARN)
+      end
 
-			-- FormatterInfo command
-			vim.api.nvim_create_user_command("FormatterInfo", function()
-				local filetype = vim.bo.filetype
-				local formatters_entry = conform.formatters_by_ft[filetype]
-				if formatters_entry then
-					local formatters = {}
-					for i = 1, #formatters_entry do
-						table.insert(formatters, formatters_entry[i])
-					end
-					local opts_str = ""
-					if formatters_entry.stop_after_first then
-						opts_str = " (stop_after_first = true)"
-					end
-					print("Formatters for " .. filetype .. ": " .. table.concat(formatters, ", ") .. opts_str)
-				else
-					print("No formatters configured for filetype: " .. filetype)
-				end
-			end, {})
-		end,
-	},
+      -- Function to poll and set up formatter when installed
+      local function setup_formatter_when_installed(formatter_name, filetypes, formatters, options)
+        if mason_registry.is_installed(formatter_name) then
+          -- Create entry for formatters_by_ft for all filetypes
+          local entry = {}
+          for i, fmt in ipairs(formatters) do
+            entry[i] = fmt
+          end
+          for k, v in pairs(options) do
+            entry[k] = v
+          end
+          for _, ft in ipairs(filetypes) do
+            conform.formatters_by_ft[ft] = entry
+          end
+          vim.notify("Formatter " .. formatter_name .. " set up for " .. table.concat(filetypes, ", "),
+            vim.log.levels.INFO)
+        else
+          vim.notify("Waiting for formatter: " .. formatter_name .. " to install...", vim.log.levels.INFO)
+          vim.defer_fn(function()
+            setup_formatter_when_installed(formatter_name, filetypes, formatters, options)
+          end, 1000)   -- Recheck every 1 second
+        end
+      end
+
+      -- Set up formatters based on active filetype configurations
+      for _, config in pairs(filetype_configs) do
+        -- Only proceed if formatter field exists and has formatters
+        if config.formatter and config.formatter.formatters then
+          local formatters = config.formatter.formatters
+          local options = config.formatter.options or {}
+          local filetypes = config.filetypes   -- Use all filetypes from the config
+
+          for _, formatter_name in ipairs(formatters) do
+            if not mason_registry.is_installed(formatter_name) then
+              -- Notify and install the formatter
+              vim.notify("Installing formatter: " .. formatter_name, vim.log.levels.INFO)
+              require("mason.api.command").MasonInstall({ formatter_name })
+              setup_formatter_when_installed(formatter_name, filetypes, formatters, options)
+            else
+              -- If already installed, set up immediately for all filetypes
+              local entry = {}
+              for i, fmt in ipairs(formatters) do
+                entry[i] = fmt
+              end
+              for k, v in pairs(options) do
+                entry[k] = v
+              end
+              for _, ft in ipairs(filetypes) do
+                conform.formatters_by_ft[ft] = entry
+              end
+            end
+          end
+        end
+      end
+
+      -- FormatterInfo command
+      vim.api.nvim_create_user_command("FormatterInfo", function()
+        local filetype = vim.bo.filetype
+        local formatters_entry = conform.formatters_by_ft[filetype]
+        if formatters_entry then
+          local formatters = {}
+          for i = 1, #formatters_entry do
+            table.insert(formatters, formatters_entry[i])
+          end
+          local opts_str = ""
+          if formatters_entry.stop_after_first then
+            opts_str = " (stop_after_first = true)"
+          end
+          print("Formatters for " .. filetype .. ": " .. table.concat(formatters, ", ") .. opts_str)
+        else
+          print("No formatters configured for filetype: " .. filetype)
+        end
+      end, {})
+    end,
+  },
 }

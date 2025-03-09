@@ -1,5 +1,5 @@
 return {
-	active_filetypes = { 
+  active_filetypes = {
     "lua",
     "jsts_normal",
     "markdown",
