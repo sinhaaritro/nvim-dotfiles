@@ -1,7 +1,12 @@
 return {
-  active_filetypes = {
-    "lua",
-    "jsts_normal",
-    "markdown",
-  },
+	active_filetypes = {
+		"lua",
+		"markdown",
+		"json",
+		"yaml",
+		"docker",
+		-- "jsts_normal",
+		-- "ts_deno",
+		-- "dart",
+	},
 }
