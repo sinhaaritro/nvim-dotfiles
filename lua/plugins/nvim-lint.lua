@@ -10,51 +10,81 @@ return {
 			-- Initialize lint.linters_by_ft as an empty table
 			lint.linters_by_ft = {}
 
-			-- Helper function to install a linter if not present
-			local function install_linter(linter_name)
-				if not mason_registry.is_installed(linter_name) then
-					vim.notify("Installing linter: " .. linter_name, vim.log.levels.INFO)
-					vim.fn.system({ "nvim", "-c", "MasonInstall " .. linter_name, "-c", "q" })
-					return true -- Installation triggered
+			-- Load filetypeconfig.lua from the root of the config directory
+			local config_dir = vim.fn.stdpath("config")
+			local filetypeconfig_path = config_dir .. "/filetypeconfig.lua"
+			local filetypeconfig = dofile(filetypeconfig_path) or { active_filetypes = {} }
+			local active_filetypes = filetypeconfig.active_filetypes or {}
+
+			-- Collect linter configurations and track missing files
+			local filetype_configs = {}
+			local missing_files = {}
+
+			for _, ft in ipairs(active_filetypes) do
+				local filepath = config_dir .. "/lua/filetypes/" .. ft .. ".lua"
+				if vim.fn.filereadable(filepath) == 1 then
+					local config = require("filetypes." .. ft)
+					filetype_configs[ft] = config
+				else
+					table.insert(missing_files, ft)
 				end
-				return false -- Already installed
 			end
 
-			-- Helper function to add linter to lint.linters_by_ft
-			local function add_linter_to_ft(filetype, linter_name)
-				lint.linters_by_ft[filetype] = lint.linters_by_ft[filetype] or {}
-				if not vim.tbl_contains(lint.linters_by_ft[filetype], linter_name) then
-					table.insert(lint.linters_by_ft[filetype], linter_name)
-				end
+			-- Display a single warning for all missing files, if any
+			if #missing_files > 0 then
+				local warning_msg = "Warning: The following filetype configurations were not found: "
+					.. table.concat(missing_files, ", ")
+				vim.notify(warning_msg, vim.log.levels.WARN)
 			end
 
-			-- Dynamic linter setup via FileType event
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "*",
-				callback = function(args)
-					local ft = args.match
-					local config_path = "plugins.filetypes." .. ft
-					local ok, config = pcall(require, config_path)
-					if not ok or not config.linter then
-						return
-					end
-
-					for _, linter_name in ipairs(config.linter) do
-						if install_linter(linter_name) then
-							-- Delay setup to allow installation
-							vim.defer_fn(function()
-								mason_registry.refresh()
-								add_linter_to_ft(ft, linter_name)
-								vim.notify("Linter " .. linter_name .. " installed for " .. ft, vim.log.levels.INFO)
-								lint.try_lint() -- Trigger linting after installation
-							end, 2000)
-						else
-							-- Add immediately if already installed
-							add_linter_to_ft(ft, linter_name)
+			-- Function to poll and set up linter when installed
+			local function setup_linter_when_installed(linter_name, filetypes)
+				if mason_registry.is_installed(linter_name) then
+					-- Add linter to lint.linters_by_ft for all filetypes
+					for _, ft in ipairs(filetypes) do
+						lint.linters_by_ft[ft] = lint.linters_by_ft[ft] or {}
+						if not vim.tbl_contains(lint.linters_by_ft[ft], linter_name) then
+							table.insert(lint.linters_by_ft[ft], linter_name)
 						end
 					end
-				end,
-			})
+					vim.notify(
+						"Linter " .. linter_name .. " set up for " .. table.concat(filetypes, ", "),
+						vim.log.levels.INFO
+					)
+					lint.try_lint() -- Trigger linting after setup
+				else
+					vim.notify("Waiting for linter: " .. linter_name .. " to install...", vim.log.levels.INFO)
+					vim.defer_fn(function()
+						setup_linter_when_installed(linter_name, filetypes)
+					end, 1000) -- Recheck every 1 second
+				end
+			end
+
+			-- Set up linters based on active filetype configurations
+			for _, config in pairs(filetype_configs) do
+				-- Only proceed if linter field exists and is a table
+				if config.linter and type(config.linter) == "table" then
+					local linters = config.linter
+					local filetypes = config.filetypes -- Use all filetypes from the config
+
+					for _, linter_name in ipairs(linters) do
+						if not mason_registry.is_installed(linter_name) then
+							-- Notify and install the linter
+							vim.notify("Installing linter: " .. linter_name, vim.log.levels.INFO)
+							require("mason.api.command").MasonInstall({ linter_name })
+							setup_linter_when_installed(linter_name, filetypes)
+						else
+							-- If already installed, set up immediately for all filetypes
+							for _, ft in ipairs(filetypes) do
+								lint.linters_by_ft[ft] = lint.linters_by_ft[ft] or {}
+								if not vim.tbl_contains(lint.linters_by_ft[ft], linter_name) then
+									table.insert(lint.linters_by_ft[ft], linter_name)
+								end
+							end
+						end
+					end
+				end
+			end
 
 			-- Linting logic module
 			local M = {}
@@ -66,7 +96,7 @@ return {
 					local argv = { ... }
 					timer:start(ms, 0, function()
 						timer:stop()
-						vim.schedule_wrap(fn)(unpack(argv))
+						vim.schedule_wrap(fn)(table.unpack(argv))
 					end)
 				end
 			end
