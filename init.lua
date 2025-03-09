@@ -15,3 +15,5 @@ require("config.keymaps")
 
 -- [[ Basic Auto Commands ]]
 require("config.autocmds")
+
+-- require("lspconfig").ts_ls.setup({})

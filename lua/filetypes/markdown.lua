@@ -1,4 +1,5 @@
 return {
+	filetypes = { "markdown" },
 	lsp = {},
 	formatter = {
 		formatters = { "markdownlint" },

@@ -1,4 +1,5 @@
 return {
+	filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
 	lsp = {
 		server = "ts_ls",
 		settings = {

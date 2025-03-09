@@ -1,4 +1,5 @@
 return {
+	filetypes = { "lua" },
 	lsp = {
 		server = "lua_ls",
 		settings = {
