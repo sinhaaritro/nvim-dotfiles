@@ -92,11 +92,12 @@ return {
 			-- Debounce function to prevent excessive linting
 			function M.debounce(ms, fn)
 				local timer = vim.uv.new_timer()
+				local unpack_fn = table.unpack or unpack -- Fallback to unpack if table.unpack is unavailable
 				return function(...)
 					local argv = { ... }
 					timer:start(ms, 0, function()
 						timer:stop()
-						vim.schedule_wrap(fn)(table.unpack(argv))
+						vim.schedule_wrap(fn)(unpack_fn(argv))
 					end)
 				end
 			end
