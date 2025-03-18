@@ -13,16 +13,4 @@ rm -rf "$XDG_CONFIG_HOME/nvim"
 # Symlink the entire dotfiles repo to ~/.config/nvim
 ln -sf "$PWD" "$XDG_CONFIG_HOME/nvim"
 
-packages=(
-	nodejs
-	npm
-	unzip
-	luarocks
-)
-
-for package in "${packages[@]}"; do
-	echo "Installing $package..."
-	apt-get install -y "$package"
-done
-
 echo "Neovim dotfiles installed to $XDG_CONFIG_HOME/nvim."
