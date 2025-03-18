@@ -27,9 +27,9 @@ require("lazy").setup({
 		-- Only do this if you know what you are doing, as it can lead to unexpected behavior.
 		lazy = false, -- should plugins be lazy-loaded?
 		-- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
-    		-- have outdated releases, which may break your Neovim install.
-    		version = false, -- always use the latest git commit
-    		-- version = "*", -- try installing the latest stable version for plugins that support semver
+		-- have outdated releases, which may break your Neovim install.
+		version = false, -- always use the latest git commit
+		-- version = "*", -- try installing the latest stable version for plugins that support semver
 	},
 
 	-- automatically check for plugin updates
