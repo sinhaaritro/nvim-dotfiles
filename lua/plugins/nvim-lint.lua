@@ -13,6 +13,7 @@
 return {
 	{
 		"mfussenegger/nvim-lint",
+		lazy = true,
 		events = { "BufWritePost", "BufReadPost", "InsertLeave" },
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()

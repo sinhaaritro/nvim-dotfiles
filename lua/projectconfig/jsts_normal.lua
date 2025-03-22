@@ -25,12 +25,33 @@ return {
 	},
 	linter = { "eslint_d" },
 	dap = {
-		-- Example: could be something like
-		-- adapter = "js-debug-adapter"
-		-- configurations = {}
+		ensure_installed = { "js" },
+		adapter = {
+			name = "pwa-node",
+			config = {
+				type = "server",
+				host = "localhost",
+				port = "${port}",
+				executable = {
+					command = "node",
+					args = {
+						vim.fn.stdpath("data") .. "/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js",
+						"${port}",
+					},
+				},
+			},
+		},
+		-- configurations = {
+		-- 	{
+		-- 		type = "pwa-node",
+		-- 		request = "launch",
+		-- 		name = "Launch file",
+		-- 		program = "${file}",
+		-- 		cwd = "${workspaceFolder}",
+		-- 	},
+		-- },
 	},
 	test = {
-		-- Example: could be something like
-		-- runner = "jest"
+		adapter = "marilari88/neotest-vitest",
 	},
 }

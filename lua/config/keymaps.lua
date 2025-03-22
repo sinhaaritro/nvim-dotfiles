@@ -161,6 +161,24 @@ vim.keymap.set(
 
 vim.keymap.set("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
 vim.keymap.set("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
+
+vim.keymap.set("n", "<leader>cp", function()
+	local config_path = vim.fn.stdpath("config") .. "/projectconfig.lua"
+	local buf = vim.api.nvim_create_buf(false, true) -- Create a new scratch buffer
+	vim.api.nvim_buf_set_name(buf, "projectconfig") -- Set buffer name to "projectconfig"
+	vim.bo[buf].filetype = "lua" -- Set filetype to "lua"
+	vim.api.nvim_open_win(buf, true, {
+		relative = "editor",
+		width = math.floor(vim.o.columns * 0.8),
+		height = math.floor(vim.o.lines * 0.8),
+		row = math.floor((vim.o.lines - vim.o.lines * 0.8) / 2),
+		col = math.floor((vim.o.columns - vim.o.columns * 0.8) / 2),
+		style = "minimal",
+		border = "rounded",
+	})
+	vim.cmd("edit " .. config_path) -- Load the project config file
+end, { desc = "Open project config in floating window" })
+
 vim.keymap.set("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 vim.keymap.set("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
 vim.keymap.set("n", "<leader>uI", function()

@@ -14,7 +14,7 @@ return {
 	{ -- Highlight todo, notes, etc in comments
 		"folke/todo-comments.nvim",
 		cmd = { "TodoTrouble", "TodoTelescope" }, -- Commands to trigger loading
-		event = "VimEnter", -- Load on Neovim startup
+		event = "VeryLazy",
 		dependencies = { "nvim-lua/plenary.nvim" }, -- Required utility plugin
 		opts = {
 			signs = true, -- Disable signs in gutter

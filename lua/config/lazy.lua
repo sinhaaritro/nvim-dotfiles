@@ -37,7 +37,7 @@ require("lazy").setup({ -- Setup Lazy.nvim
 		-- Set this to `true` to have all your plugins lazy-loaded by default
 		-- Only do this if you know what you are doing, as it can lead to
 		-- unexpected behavior
-		lazy = false, -- Disable lazy-loading by default
+		lazy = true, -- Disable lazy-loading by default
 		-- It's recommended to leave version=false for now, since a lot the
 		-- plugin that support versioning have outdated releases, which may
 		-- break your Neovim install
