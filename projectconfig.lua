@@ -1,7 +1,8 @@
 return {
-	active_filetypes = {
-		"lua",
-		"markdown",
+	projecttype = {
+		"neovimdev",
+		-- "lua",
+		-- "markdown",
 		-- "json",
 		-- "yaml",
 		-- "docker",

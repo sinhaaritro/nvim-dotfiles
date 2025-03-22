@@ -1,3 +1,13 @@
+-- =============================================================================
+-- Keybinding Helper                                                          --
+-- =============================================================================
+-- This file configures which-key.nvim to display and organize keybindings    --
+-- in Neovim for improved usability                                           --
+--                                                                            --
+-- Plugins Used:                                                              --
+-- - which-key.nvim (https://github.com/folke/which-key.nvim): Displays and   --
+--          organizes keybindings with a popup menu                           --
+
 return {
 	{
 		"folke/which-key.nvim",
