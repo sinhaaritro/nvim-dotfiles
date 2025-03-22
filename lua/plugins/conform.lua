@@ -1,5 +1,17 @@
+-- =============================================================================
+-- Formatting Configuration Manager                                           --
+-- =============================================================================
+-- This file configures conform.nvim to set up formatters based on project    --
+-- types defined in projectconfig.lua and configs in lua/projectconfig        --
+--                                                                            --
+-- Plugins Used:                                                              --
+-- - conform.nvim (https://github.com/stevearc/conform.nvim): Provides        --
+--          formatting support for Neovim                                     --
+-- - mason.nvim (https://github.com/williamboman/mason.nvim): Manages         --
+--          formatter installations                                           --
+
 return {
-  { -- Autoformat
+  {
     "stevearc/conform.nvim",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = { "williamboman/mason.nvim" },
@@ -17,12 +29,15 @@ return {
     config = function()
       local conform = require("conform")
       local mason_registry = require("mason-registry")
+      local project_config = require("utils.project_config")
 
       -- Basic setup for conform.nvim
       conform.setup({
         notify_on_error = false,
         format_on_save = function(bufnr)
-          local disable_filetypes = { c = true, cpp = true }
+          local disable_filetypes = {
+            -- c = true, cpp = true
+          }
           local lsp_format_opt
           if disable_filetypes[vim.bo[bufnr].filetype] then
             lsp_format_opt = "never"
@@ -36,32 +51,8 @@ return {
         end,
       })
 
-      -- Load filetypeconfig.lua from the root of the config directory
-      local config_dir = vim.fn.stdpath("config")
-      local filetypeconfig_path = config_dir .. "/filetypeconfig.lua"
-      local filetypeconfig = dofile(filetypeconfig_path) or { active_filetypes = {} }
-      local active_filetypes = filetypeconfig.active_filetypes or {}
-
-      -- Collect formatter configurations and track missing files
-      local filetype_configs = {}
-      local missing_files = {}
-
-      for _, ft in ipairs(active_filetypes) do
-        local filepath = config_dir .. "/lua/filetypes/" .. ft .. ".lua"
-        if vim.fn.filereadable(filepath) == 1 then
-          local config = require("filetypes." .. ft)
-          filetype_configs[ft] = config
-        else
-          table.insert(missing_files, ft)
-        end
-      end
-
-      -- Display a single warning for all missing files, if any
-      if #missing_files > 0 then
-        local warning_msg = "Warning: The following filetype configurations were not found: " ..
-        table.concat(missing_files, ", ")
-        vim.notify(warning_msg, vim.log.levels.WARN)
-      end
+      -- Load project configurations
+      local projecttype_configs = project_config.load_configs()
 
       -- Function to poll and set up formatter when installed
       local function setup_formatter_when_installed(formatter_name, filetypes, formatters, options)
@@ -83,17 +74,17 @@ return {
           vim.notify("Waiting for formatter: " .. formatter_name .. " to install...", vim.log.levels.INFO)
           vim.defer_fn(function()
             setup_formatter_when_installed(formatter_name, filetypes, formatters, options)
-          end, 1000)   -- Recheck every 1 second
+          end, 1000) -- Recheck every 1 second
         end
       end
 
-      -- Set up formatters based on active filetype configurations
-      for _, config in pairs(filetype_configs) do
+      -- NOTE: Set up formatters based on active project types
+      for _, config in pairs(projecttype_configs) do
         -- Only proceed if formatter field exists and has formatters
         if config.formatter and config.formatter.formatters then
           local formatters = config.formatter.formatters
           local options = config.formatter.options or {}
-          local filetypes = config.filetypes   -- Use all filetypes from the config
+          local filetypes = config.filetypes -- Use all filetypes from the config
 
           for _, formatter_name in ipairs(formatters) do
             if not mason_registry.is_installed(formatter_name) then

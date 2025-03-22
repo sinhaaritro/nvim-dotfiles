@@ -37,7 +37,8 @@ return {
 			end
 
 			-- Check for projectconfig.lua in current working directory
-			local project_config_path = vim.fn.getcwd() .. "/projectconfig.lua"
+      local config_dir = vim.fn.stdpath("config")
+		  local project_config_path = config_dir .. "/projectconfig.lua"
 			local project_config = nil
 			-- File readable check
 			if vim.fn.filereadable(project_config_path) == 1 then

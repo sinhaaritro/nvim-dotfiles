@@ -1,7 +1,7 @@
 return {
 	projecttype = {
 		"neovimdev",
-		-- "lua",
+		"lua",
 		-- "markdown",
 		-- "json",
 		-- "yaml",
