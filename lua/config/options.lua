@@ -1,81 +1,136 @@
--- [[ Setting options ]]
--- See `:help vim.opt`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
--- Use `:set all` to a list of all the options
--- Use `:options` to a get a view of the options
+-- =============================================================================
+-- Neovim Options Configuration                                               --
+-- =============================================================================
+-- This section configures Neovim's core settings using vim.opt, controlling  --
+-- behavior for file handling, visuals, editing, and more. See `:help vim.opt`--
 
-local opt = vim.opt
+-- NOTE: You can change these options as you wish! * See `:help option-list`
+-- Use `:set all` to list all options, `:options` for a detailed view
+local opt = vim.opt -- Alias for vim.opt
+
+-- =============================================================================
+-- File Management Options                                                    --
+-- =============================================================================
+-- This section sets options related to file writing, undo, and sessions      --
 
 opt.autowrite = true -- Enable auto write
-opt.breakindent = true -- Wrapped lines will continue on the same indent
--- only set clipboard if not in ssh, to make sure the OSC 52
--- integration works automatically. Requires Neovim >= 0.10.0
-opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus" -- Sync with system clipboard
-opt.completeopt = "menu,menuone,noselect"
-opt.conceallevel = 2 -- Hide * markup for bold and italic, but not markers with substitutions
-opt.confirm = true -- Confirm to save changes before exiting modified buffer
-opt.cursorline = true -- Enable highlighting of the current line
-opt.expandtab = true -- Use spaces instead of tabs
-opt.fillchars = {
-	foldopen = "",
-	foldclose = "",
-	fold = " ",
-	foldsep = " ",
-	diff = "╱",
-	eob = " ",
-}
-opt.foldlevel = 99
-opt.foldexpr = "v:lua.require'lazyvim.util'.ui.foldexpr()"
-opt.foldmethod = "expr"
-opt.foldtext = ""
-opt.formatexpr = "v:lua.require'lazyvim.util'.format.formatexpr()"
-opt.formatoptions = "jcroqlnt" -- tcqj
-opt.grepformat = "%f:%l:%c:%m"
-opt.grepprg = "rg --vimgrep"
-opt.hlsearch = true -- Highlight the search matches
-opt.ignorecase = true -- Ignore case
-opt.inccommand = "nosplit" -- preview incremental substitute
-opt.incsearch = true -- Show search match as you type
-opt.jumpoptions = "view"
-opt.laststatus = 3 -- global statusline
-opt.linebreak = true -- Wrap lines at convenient points
-opt.list = true -- Show some invisible characters (tabs...
-opt.listchars = { tab = "» ", leadmultispace = "» ", trail = "·", nbsp = "␣" }
-opt.mouse = "a" -- Enable mouse mode
-opt.number = true -- Print line number
-opt.numberwidth = 3 -- Min number line width
-opt.pumblend = 10 -- Popup blend
-opt.pumheight = 10 -- Maximum number of entries in a popup
-opt.relativenumber = true -- Relative line numbers
-opt.ruler = false -- Disable the default ruler
-opt.scrolloff = 4 -- Lines of context
-opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
-opt.shiftround = true -- Round indent
-opt.shiftwidth = 2 -- Size of an indent
-opt.shortmess:append({ W = true, I = true, c = true, C = true })
-opt.showmode = false -- Dont show mode since we have a statusline
-opt.sidescrolloff = 8 -- Columns of context
-opt.signcolumn = "yes" -- Always show the signcolumn, otherwise it would shift the text each time
-opt.smartcase = true -- Don't ignore case with capitals
-opt.smartindent = true -- Insert indents automatically
-opt.smoothscroll = true
-opt.softtabstop = 2
-opt.spelllang = { "en" }
-opt.splitbelow = true -- Put new windows below current
-opt.splitkeep = "screen"
-opt.splitright = true -- Put new windows right of current
-opt.tabstop = 2 -- Number of spaces tabs count for
-opt.termguicolors = true -- True color support
-opt.timeoutlen = vim.g.vscode and 1000 or 300 -- Lower than default (1000) to quickly trigger which-key
-opt.undodir = vim.fn.expand("~/.cache/nvim/undodir")
-opt.undofile = true
-opt.undolevels = 10000
-opt.updatetime = 200 -- Save swap file and trigger CursorHold
-opt.virtualedit = "block" -- Allow cursor to move where there is no text in visual block mode
-opt.wildmode = "longest:full,full" -- Command-line completion mode
-opt.winminwidth = 5 -- Minimum window width
-opt.wrap = true -- Disable line wrap
+opt.confirm = true -- Confirm before exiting modified buffer
+opt.sessionoptions = {
+	"buffers",
+	"curdir",
+	"tabpages",
+	"winsize",
+	"help",
+	"globals",
+	"skiprtp",
+	"folds",
+} -- Session components
+opt.undodir = vim.fn.expand("~/.cache/nvim/undodir") -- Set undo directory
+opt.undofile = true -- Enable persistent undo
+opt.undolevels = 10000 -- Set max undo levels
 
--- Fix markdown indentation settings
-vim.g.markdown_recommended_style = 0
+-- =============================================================================
+-- Visual Display Options                                                     --
+-- =============================================================================
+-- This section configures UI elements like line numbers, statusline, and     --
+-- visual feedback                                                            --
+
+opt.breakindent = true -- Wrapped lines keep indent
+opt.cursorline = true -- Highlight current line
+opt.fillchars = {
+	foldopen = "", -- Fold open symbol
+	foldclose = "", -- Fold closed symbol
+	fold = " ", -- Fold fill character
+	foldsep = " ", -- Fold separator
+	diff = "╱", -- Diff fill character
+	eob = " ", -- End of buffer fill
+}
+opt.foldlevel = 99 -- Start with all folds open
+opt.foldexpr = "v:lua.require'lazyvim.util'.ui.foldexpr()" -- Custom fold expression
+opt.foldmethod = "expr" -- Use expression-based folding
+opt.foldtext = "" -- Custom fold text (empty)
+opt.laststatus = 3 -- Global statusline
+opt.linebreak = true -- Wrap at word boundaries
+opt.list = true -- Show invisible characters
+opt.listchars = {
+	tab = "» ",
+	leadmultispace = "» ",
+	trail = "·",
+	nbsp = "␣",
+} -- Define invisible chars
+opt.number = true -- Show line numbers
+opt.numberwidth = 3 -- Min width for line numbers
+opt.pumblend = 10 -- Popup menu transparency
+opt.pumheight = 10 -- Max popup menu height
+opt.relativenumber = true -- Show relative line numbers
+opt.ruler = false -- Disable default ruler
+opt.scrolloff = 4 -- Vertical context lines
+opt.showmode = false -- Hide mode (statusline used)
+opt.sidescrolloff = 8 -- Horizontal context columns
+opt.signcolumn = "yes" -- Always show signcolumn
+opt.smoothscroll = true -- Smooth scrolling
+opt.termguicolors = true -- Enable true color support
+opt.winminwidth = 5 -- Minimum window width
+opt.wrap = true -- Enable line wrapping
+
+-- =============================================================================
+-- Editing Behavior Options                                                   --
+-- =============================================================================
+-- This section sets options for text editing, indentation, and clipboard     --
+
+-- NOTE: Clipboard sync depends on SSH and Neovim >= 0.10.0
+opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus" -- Sync clipboard outside SSH
+opt.completeopt = "menu,menuone,noselect" -- Completion menu settings
+opt.conceallevel = 2 -- Hide markup for bold/italic
+opt.expandtab = true -- Use spaces instead of tabs
+opt.formatexpr = "v:lua.require'lazyvim.util'.format.formatexpr()" -- Custom format expression
+opt.formatoptions = "jcroqlnt" -- Formatting options
+opt.mouse = "a" -- Enable mouse in all modes
+opt.shiftround = true -- Round indent to shiftwidth
+opt.shiftwidth = 2 -- Indent size
+opt.shortmess:append({ W = true, I = true, c = true, C = true }) -- Shorten messages
+opt.smartindent = true -- Auto-indent smartly
+opt.softtabstop = 2 -- Spaces per soft tab
+opt.splitbelow = true -- New splits below current
+opt.splitkeep = "screen" -- Keep screen layout on split
+opt.splitright = true -- New splits right of current
+opt.tabstop = 2 -- Spaces per tab
+opt.virtualedit = "block" -- Cursor free in block mode
+opt.wildmode = "longest:full,full" -- Command-line completion mode
+
+-- =============================================================================
+-- Search and Replace Options                                                 --
+-- =============================================================================
+-- This section configures search, grep, and substitution behavior            --
+
+opt.grepformat = "%f:%l:%c:%m" -- Grep output format
+opt.grepprg = "rg --vimgrep" -- Use ripgrep for grep
+opt.hlsearch = true -- Highlight search matches
+opt.ignorecase = true -- Case-insensitive search
+opt.inccommand = "nosplit" -- Preview substitutions
+opt.incsearch = true -- Show matches while typing
+opt.smartcase = true -- Case-sensitive with capitals
+
+-- =============================================================================
+-- Miscellaneous Options                                                      --
+-- =============================================================================
+-- This section includes other useful settings not fitting above categories   --
+
+opt.jumpoptions = "view" -- Restore view on jumps
+opt.spelllang = { "en" } -- Set spellcheck language
+opt.timeoutlen = 300 -- Time for key sequences
+opt.updatetime = 200 -- Swap file/CursorHold delay
+
+-- =============================================================================
+-- Help Section                                                               --
+-- =============================================================================
+-- This section provides quick references and commands to explore the config  --
+-- defined in this file. Uncomment lines to test or learn more about it       --
+
+-- Useful Commands:                                                           --
+--   :help vim.opt         - Learn about vim.opt and option settings          --
+--   :set all             - List all current option values                    --
+--   :options             - View detailed options overview                    --
+-- Explore Configuration:                                                     --
+-- print("Shiftwidth: " .. opt.shiftwidth:get())  -- Show shiftwidth value    --
+-- print("Clipboard: " .. opt.clipboard:get())    -- Show clipboard setting   --
