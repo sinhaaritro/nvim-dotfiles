@@ -124,9 +124,17 @@ return {
 					if formatters_entry.stop_after_first then
 						opts_str = " (stop_after_first = true)"
 					end
-					print("Formatters for " .. filetype .. ": " .. table.concat(formatters, ", ") .. opts_str)
+					vim.notify(
+						"Formatters for " .. filetype .. ": " .. table.concat(formatters, ", ") .. opts_str,
+						vim.log.levels.INFO,
+						{ title = "conform" }
+					)
 				else
-					print("No formatters configured for filetype: " .. filetype)
+					vim.notify(
+						"No formatters configured for filetype: " .. filetype,
+						vim.log.levels.WARN,
+						{ title = "conform" }
+					)
 				end
 			end, {})
 		end,

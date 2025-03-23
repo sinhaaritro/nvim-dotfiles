@@ -193,7 +193,7 @@ return {
 							dap.configurations[filetype] = dap_configurations
 						end
 					end
-					print("Loaded configurations from launch.json")
+					vim.notify("Loaded configurations from launch.json", vim.log.levels.INFO, { title = "nvim-dap" })
 				end
 			end
 

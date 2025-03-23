@@ -13,8 +13,7 @@
 return {
 	{
 		"mfussenegger/nvim-lint",
-		lazy = true,
-		events = { "BufWritePost" },
+		event = { "BufReadPre", "BufNewFile", "BufWritePre" },
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()
 			-- Load required modules
@@ -134,9 +133,17 @@ return {
 				local filetype = vim.bo.filetype
 				local linters = lint.linters_by_ft[filetype] or {}
 				if #linters > 0 then
-					print("Linters for " .. filetype .. ": " .. table.concat(linters, ", "))
+					vim.notify(
+						"Linters for " .. filetype .. ": " .. table.concat(linters, ", "),
+						vim.log.levels.INFO,
+						{ title = "nvim-lint" }
+					)
 				else
-					print("No linters configured for filetype: " .. filetype)
+					vim.notify(
+						"No linters configured for filetype: " .. filetype,
+						vim.log.levels.WARN,
+						{ title = "nvim-lint" }
+					)
 				end
 			end, {})
 		end,

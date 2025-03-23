@@ -73,7 +73,11 @@ return {
 				if success then
 					table.insert(adapters, adapter_module)
 				else
-					print("Warning: Failed to load adapter " .. adapter_name)
+					vim.notify(
+						"Warning: Failed to load adapter " .. adapter_name,
+						vim.log.levels.WARN,
+						{ title = "neotest" }
+					)
 				end
 			end
 
