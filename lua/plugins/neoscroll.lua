@@ -2,7 +2,7 @@ return {
 	{ --Smooth scrolling
 		"karb94/neoscroll.nvim",
 		enabled = true,
-		-- event = buffer_with_content_events,
+		event = { "BufReadPre", "BufNewFile" },
 		opts = {},
 		config = function()
 			local neoscroll = require("neoscroll")

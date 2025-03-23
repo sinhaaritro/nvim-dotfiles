@@ -33,10 +33,9 @@ local function get_args(config)
 end
 
 return {
-	{ "nvim-neotest/nvim-nio", lazy = true },
+	{ "nvim-neotest/nvim-nio" },
 	{
 		"jay-babu/mason-nvim-dap.nvim",
-		lazy = true,
 		dependencies = { "williamboman/mason.nvim" },
 		config = function() end, -- Just install the plugin
 	},
@@ -64,7 +63,7 @@ return {
 			end
 		end,
 	},
-	{ "theHamsta/nvim-dap-virtual-text", lazy = true, dependencies = { "mfussenegger/nvim-dap" } },
+	{ "theHamsta/nvim-dap-virtual-text", dependencies = { "mfussenegger/nvim-dap" } },
 	{
 		"mfussenegger/nvim-dap",
 		dependencies = {

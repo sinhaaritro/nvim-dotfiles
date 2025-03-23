@@ -6,7 +6,6 @@ return {
 		event = { "BufReadPre", "BufNewFile" },
 		keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
 		build = ":MasonUpdate",
-		lazy = true,
 		-- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
 		opts = {
 			ui = {

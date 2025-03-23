@@ -1,9 +1,9 @@
 return {
 	{
 		"echasnovski/mini.ai",
-		event = "VeryLazy",
+		event = { "BufReadPre", "BufNewFile" },
 		opts = function()
-			local ai = require("mini.ai")
+			-- local ai = require("mini.ai")
 			return {
 				n_lines = 500,
 				-- custom_textobjects = {

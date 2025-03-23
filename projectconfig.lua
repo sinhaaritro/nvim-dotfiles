@@ -6,7 +6,7 @@ return {
 		-- "json",
 		-- "yaml",
 		-- "docker",
-		-- "jsts_normal",
+		"jsts_normal",
 		-- "ts_deno",
 		-- "dart",
 	},

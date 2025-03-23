@@ -19,30 +19,33 @@ return {
 					-- Defaults to a picker that supports `fzf-lua`, `telescope.nvim` and `mini.pick`
 					---@type fun(cmd:string, opts:table)|nil
 					pick = nil,
-          -- Used by the `keys` section to show keymaps.
-          -- Set your custom keymaps here.
-          -- When using a function, the `items` argument are the default keymaps.
-          ---@type snacks.dashboard.Item[]
-          -- stylua: ignore
-          keys = {
-            { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-            { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-            { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-            { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
-            { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
-            { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-            { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
-            { icon = " ", key = "p", desc = "Project Config", action = "<leader>cp" },
-            { icon = " ", key = "q", desc = "Quit", action = ":qa" },
-          },
+					          -- Used by the `keys` section to show keymaps.
+					          -- Set your custom keymaps here.
+					          -- When using a function, the `items` argument are the default keymaps.
+					          ---@type snacks.dashboard.Item[]
+					          -- stylua: ignore
+					          keys = {
+					            { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+					            { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+					            { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+					            { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+					            { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
+					            -- { icon = " ", key = "p", desc = "Project Config", action = "<leader>cp" },
+					            { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+					            { icon = " ", key = "M", desc = "Mason", action = ":Mason" },
+					            { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+					          },
 					-- Used by the `header` section
-					header = [[
-███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
-████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
-██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
-██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
-██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
-╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝]],
+					header = [[                                                                       
+                                                                     
+       ████ ██████           █████      ██                     
+      ███████████             █████                             
+      █████████ ███████████████████ ███   ███████████   
+     █████████  ███    █████████████ █████ ██████████████   
+    █████████ ██████████ █████████ █████ █████ ████ █████   
+  ███████████ ███    ███ █████████ █████ █████ ████ █████  
+ ██████  █████████████████████ ████ █████ █████ ████ ██████ 
+                                                                       ]],
 				},
 				-- item field formatters
 				formats = {
@@ -77,16 +80,5 @@ return {
 				},
 			},
 		},
-		config = function(_, opts)
-			require("snacks").setup(opts)
-			-- Show dashboard on startup
-			vim.api.nvim_create_autocmd("VimEnter", {
-				callback = function()
-					if vim.fn.argc() == 0 and vim.fn.line2byte("$") == -1 then -- No args, empty buffer
-						require("snacks").dashboard()
-					end
-				end,
-			})
-		end,
 	},
 }

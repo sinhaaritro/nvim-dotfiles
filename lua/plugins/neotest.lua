@@ -28,15 +28,14 @@ local function is_adapter_required(adapter_name)
 end
 
 return {
-	{ "marilari88/neotest-vitest", lazy = true, cond = is_adapter_required("marilari88/neotest-vitest") },
+	{ "marilari88/neotest-vitest", cond = is_adapter_required("marilari88/neotest-vitest") },
 	{
 		"nvim-neotest/neotest",
-		lazy = true,
 		dependencies = {
-			{ "nvim-neotest/nvim-nio", lazy = true },
-			{ "nvim-lua/plenary.nvim", lazy = true },
-			{ "antoinemadec/FixCursorHold.nvim", lazy = true },
-			{ "nvim-treesitter/nvim-treesitter", lazy = true },
+			"nvim-neotest/nvim-nio",
+			"nvim-lua/plenary.nvim",
+			"antoinemadec/FixCursorHold.nvim",
+			"nvim-treesitter/nvim-treesitter",
 		},
     -- stylua: ignore
     keys = {
