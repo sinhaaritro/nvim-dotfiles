@@ -1,9 +1,9 @@
 return {
 	{
 		"akinsho/toggleterm.nvim",
-		lazy = true,
-		cmd = { "ToggleTerm" },
+		cmd = { "ToggleTerm", "TermSelect" },
 		keys = {
+			{ "<leader>T", "", desc = "+[T]erminal" },
 			{
 				"<leader>Tf",
 				function()

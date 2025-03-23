@@ -2,47 +2,84 @@ return {
 	{ --Smooth scrolling
 		"karb94/neoscroll.nvim",
 		enabled = true,
-		event = { "BufReadPre", "BufNewFile" },
-		opts = {},
-		config = function()
-			local neoscroll = require("neoscroll")
-			local keymap = {
-				-- scroll half page
-				["<C-u>"] = function()
-					neoscroll.ctrl_u({ duration = 50 })
+		event = { "BufReadPost" },
+		keys = {
+			-- Scroll half page
+			{
+				"<C-u>",
+				function()
+					require("neoscroll").ctrl_u({ duration = 50 })
 				end,
-				["<C-d>"] = function()
-					neoscroll.ctrl_d({ duration = 50 })
+				mode = { "n", "v", "x" },
+				desc = "Scroll half page up",
+			},
+			{
+				"<C-d>",
+				function()
+					require("neoscroll").ctrl_d({ duration = 50 })
 				end,
-				-- scroll full page
-				["<C-b>"] = function()
-					neoscroll.ctrl_b({ duration = 100 })
+				mode = { "n", "v", "x" },
+				desc = "Scroll half page down",
+			},
+			-- Scroll full page
+			{
+				"<C-b>",
+				function()
+					require("neoscroll").ctrl_b({ duration = 100 })
 				end,
-				["<C-f>"] = function()
-					neoscroll.ctrl_f({ duration = 100 })
+				mode = { "n", "v", "x" },
+				desc = "Scroll full page up",
+			},
+			{
+				"<C-f>",
+				function()
+					require("neoscroll").ctrl_f({ duration = 100 })
 				end,
-				-- scroll few lines
-				["<C-y>"] = function()
-					neoscroll.scroll(-0.1, { move_cursor = false, duration = 100 })
+				mode = { "n", "v", "x" },
+				desc = "Scroll full page down",
+			},
+			-- Scroll few lines
+			{
+				"<C-y>",
+				function()
+					require("neoscroll").scroll(-0.1, { move_cursor = false, duration = 100 })
 				end,
-				["<C-e>"] = function()
-					neoscroll.scroll(0.1, { move_cursor = false, duration = 100 })
+				mode = { "n", "v", "x" },
+				desc = "Scroll few lines up",
+			},
+			{
+				"<C-e>",
+				function()
+					require("neoscroll").scroll(0.1, { move_cursor = false, duration = 100 })
 				end,
-				-- scroll cursor to top/middle/buttom
-				["zt"] = function()
-					neoscroll.zt({ half_win_duration = 50 })
+				mode = { "n", "v", "x" },
+				desc = "Scroll few lines down",
+			},
+			-- Scroll cursor to top/middle/bottom
+			{
+				"zt",
+				function()
+					require("neoscroll").zt({ half_win_duration = 50 })
 				end,
-				["zz"] = function()
-					neoscroll.zz({ half_win_duration = 50 })
+				mode = { "n", "v", "x" },
+				desc = "Scroll cursor to top",
+			},
+			{
+				"zz",
+				function()
+					require("neoscroll").zz({ half_win_duration = 50 })
 				end,
-				["zb"] = function()
-					neoscroll.zb({ half_win_duration = 50 })
+				mode = { "n", "v", "x" },
+				desc = "Scroll cursor to middle",
+			},
+			{
+				"zb",
+				function()
+					require("neoscroll").zb({ half_win_duration = 50 })
 				end,
-			}
-			local modes = { "n", "v", "x" }
-			for key, func in pairs(keymap) do
-				vim.keymap.set(modes, key, func)
-			end
-		end,
+				mode = { "n", "v", "x" },
+				desc = "Scroll cursor to bottom",
+			},
+		},
 	},
 }

@@ -15,7 +15,7 @@
 
 return {
 	"neovim/nvim-lspconfig", -- LSP client configuration
-	event = { "BufReadPre", "BufNewFile" },
+	event = { "BufReadPost", "BufNewFile" },
 	dependencies = {
 		"williamboman/mason.nvim",
 		{ "williamboman/mason-lspconfig.nvim", config = function() end },

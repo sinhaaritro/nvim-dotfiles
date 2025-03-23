@@ -10,7 +10,7 @@
 return {
 	{
 		"folke/snacks.nvim",
-		lazy = false, -- Load at startup for dashboard
+		event = "VeryLazy",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = {
 			dashboard = {

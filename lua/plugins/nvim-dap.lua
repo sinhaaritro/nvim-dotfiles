@@ -34,11 +34,8 @@ end
 
 return {
 	{ "nvim-neotest/nvim-nio" },
-	{
-		"jay-babu/mason-nvim-dap.nvim",
-		dependencies = { "williamboman/mason.nvim" },
-		config = function() end, -- Just install the plugin
-	},
+	{ "theHamsta/nvim-dap-virtual-text", dependencies = { "mfussenegger/nvim-dap" } },
+	{ "jay-babu/mason-nvim-dap.nvim", dependencies = { "williamboman/mason.nvim" } },
 	{
 		"rcarriga/nvim-dap-ui",
 		dependencies = { "jay-babu/mason-nvim-dap.nvim" },
@@ -63,7 +60,6 @@ return {
 			end
 		end,
 	},
-	{ "theHamsta/nvim-dap-virtual-text", dependencies = { "mfussenegger/nvim-dap" } },
 	{
 		"mfussenegger/nvim-dap",
 		dependencies = {
@@ -163,6 +159,51 @@ return {
 					end
 				end
 			end
+
+			-- Add support for reading launch.json using getconfigs
+			local function load_launch_json()
+				local launch_json_path = require("utils.project_root").get() .. "/.vscode/launch.json"
+				local type_to_filetype = {
+					["cppdbg"] = { "c", "cpp" },
+					["codelldb"] = { "c", "cpp", "rust" },
+					["node"] = { "javascript", "typescript" },
+					["pwa-node"] = { "javascript", "typescript" },
+					["java"] = { "java" },
+					["coreclr"] = { "cs" },
+					["flutter"] = { "dart" },
+					["rust"] = { "rust" },
+					["deno"] = { "javascript", "typescript" },
+					-- Add more mappings as needed for your projects
+				}
+				local configurations = require("dap.ext.vscode").getconfigs(launch_json_path)
+				if #configurations > 0 then
+					for _, config in ipairs(configurations) do
+						assert(config.type, "Configuration in launch.json must have a 'type' key")
+						assert(config.name, "Configuration in launch.json must have a 'name' key")
+						local filetypes = type_to_filetype[config.type] or { config.type }
+						for _, filetype in ipairs(filetypes) do
+							local dap_configurations = dap.configurations[filetype] or {}
+							-- Remove any existing config with the same name to avoid duplicates
+							for i, dap_config in pairs(dap_configurations) do
+								if dap_config.name == config.name then
+									table.remove(dap_configurations, i)
+								end
+							end
+							table.insert(dap_configurations, config)
+							dap.configurations[filetype] = dap_configurations
+						end
+					end
+					print("Loaded configurations from launch.json")
+				end
+			end
+
+			-- Call load_launch_json when starting a debug session
+			dap.listeners.before["event_initialized"]["load_launch_json"] = load_launch_json
+			-- Override <leader>dc to ensure launch.json is loaded before continuing
+			vim.keymap.set("n", "<leader>dc", function()
+				load_launch_json()
+				require("dap").continue()
+			end, { desc = "Run/Continue (with launch.json)" })
 		end,
 	},
 }

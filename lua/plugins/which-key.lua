@@ -26,6 +26,7 @@ return {
 				{ "<leader>r", group = "[R]ename", icon = "󰑕 " },
 				{ "<leader>s", group = "[S]earch", mode = { "n", "x" }, icon = " " },
 				{ "<leader>t", group = "[T]est", mode = { "n", "x" }, icon = "󰙨 " },
+				{ "<leader>T", group = "[T]erminal", mode = { "n" }, icon = " " },
 				{ "<leader>u", group = "[U]i", mode = { "n", "x" }, icon = "  " },
 				{ "<leader>w", group = "[W]indows", icon = " " },
 				{ "<leader>x", group = "[]Diagonastic", icon = "󰝖 " },

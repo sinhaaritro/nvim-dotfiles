@@ -1,6 +1,8 @@
 return {
 	{
 		"folke/snacks.nvim",
+		event = "VeryLazy",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = {
 			picker = {
 				enabled = true,
