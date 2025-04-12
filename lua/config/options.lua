@@ -80,7 +80,8 @@ opt.wrap = true -- Enable line wrapping
 
 -- NOTE: Clipboard sync depends on SSH and Neovim >= 0.10.0
 opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus" -- Sync clipboard outside SSH
-opt.completeopt = "menu,menuone,noselect" -- Completion menu settings
+-- opt.completeopt = "menu,menuone,noselect" -- Completion menu settings
+opt.completeopt = { "menuone", "noselect", "preview" } -- Completion menu settings
 opt.conceallevel = 2 -- Hide markup for bold/italic
 opt.expandtab = true -- Use spaces instead of tabs
 opt.formatexpr = "v:lua.require'lazyvim.util'.format.formatexpr()" -- Custom format expression

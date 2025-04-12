@@ -2,14 +2,6 @@
 
 return {
 	filetypes = { "markdown" },
-	lsp = {
-		server = "marksman",
-		settings = {
-			cmd = { "marksman", "server" },
-			filetypes = { "markdown" },
-			settings = {}, -- Marksman has minimal settings, adjust if needed
-		},
-	},
 	formatter = {
 		formatters = { "markdownlint-cli2" }, -- Use markdownlint-cli2 for formatting
 	},

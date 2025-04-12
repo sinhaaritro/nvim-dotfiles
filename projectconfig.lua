@@ -1,14 +1,14 @@
 return {
 	projecttype = {
 		"neovimdev",
-		"markdown",
-		"json",
+		-- "markdown",
+		-- "json",
 		-- "yaml",
 		-- "docker",
 		-- "bash",
 		"lua",
-		"jsts_normal",
-		-- "ts_deno",
+		-- "jsts_normal",
+		"deno",
 		-- "dart",
 	},
 }

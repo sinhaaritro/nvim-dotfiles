@@ -34,6 +34,8 @@ require("config.options") -- Load general options
 
 require("config.keymaps") -- Load custom keymaps
 
+require("config.lsp")
+
 -- =============================================================================
 -- Autocommands                                                               --
 -- =============================================================================
