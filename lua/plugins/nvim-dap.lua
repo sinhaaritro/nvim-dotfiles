@@ -33,11 +33,12 @@ local function get_args(config)
 end
 
 return {
-	{ "nvim-neotest/nvim-nio" },
-	{ "theHamsta/nvim-dap-virtual-text", dependencies = { "mfussenegger/nvim-dap" } },
-	{ "jay-babu/mason-nvim-dap.nvim", dependencies = { "williamboman/mason.nvim" } },
+	{ "nvim-neotest/nvim-nio", enabled = not vim.g.vscode },
+	{ "theHamsta/nvim-dap-virtual-text", enabled = not vim.g.vscode, dependencies = { "mfussenegger/nvim-dap" } },
+	{ "jay-babu/mason-nvim-dap.nvim", enabled = not vim.g.vscode, dependencies = { "williamboman/mason.nvim" } },
 	{
 		"rcarriga/nvim-dap-ui",
+		enabled = not vim.g.vscode,
 		dependencies = { "jay-babu/mason-nvim-dap.nvim" },
     -- stylua: ignore
     keys = {
@@ -62,6 +63,7 @@ return {
 	},
 	{
 		"mfussenegger/nvim-dap",
+		enabled = not vim.g.vscode,
 		dependencies = {
 			"williamboman/mason.nvim",
 			"jay-babu/mason-nvim-dap.nvim",

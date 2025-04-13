@@ -10,11 +10,12 @@
 return {
 	{
 		"folke/snacks.nvim",
+		enabled = not vim.g.vscode,
 		event = "VeryLazy",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = {
 			dashboard = {
-				enabled = true,
+				enabled = not vim.g.vscode,
 				preset = {
 					-- Defaults to a picker that supports `fzf-lua`, `telescope.nvim` and `mini.pick`
 					---@type fun(cmd:string, opts:table)|nil

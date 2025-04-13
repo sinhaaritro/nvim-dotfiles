@@ -13,6 +13,7 @@
 return {
 	{
 		"mfussenegger/nvim-lint",
+		enabled = not vim.g.vscode,
 		event = { "BufReadPre", "BufNewFile", "BufWritePre" },
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()

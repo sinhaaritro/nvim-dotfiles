@@ -58,32 +58,33 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 -- =============================================================================
 -- This section manages autocommands for LSP                                  --
 
-local lsp_config = require("config.lsp")
+if not vim.g.vscode then
+	local lsp_config = require("config.lsp")
 
-vim.api.nvim_create_autocmd("LspAttach", {
-	desc = "Setup LSP Features (CodeLens, Hints, Completion)",
-	group = augroup("LspSetup"), -- One group for the main attach logic
-	callback = function(args)
-		local client = vim.lsp.get_client_by_id(args.data.client_id)
-		local bufnr = args.buf
+	vim.api.nvim_create_autocmd("LspAttach", {
+		desc = "Setup LSP Features (CodeLens, Hints, Completion)",
+		group = augroup("LspSetup"), -- One group for the main attach logic
+		callback = function(args)
+			local client = vim.lsp.get_client_by_id(args.data.client_id)
+			local bufnr = args.buf
 
-		-- Basic validation
-		if not client or not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
-			return
-		end
+			-- Basic validation
+			if not client or not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
+				return
+			end
 
-		-- vim.notify("LspAttach triggered for client: " .. client.name .. ", buffer: " .. bufnr, vim.log.levels.INFO)
+			-- vim.notify("LspAttach triggered for client: " .. client.name .. ", buffer: " .. bufnr, vim.log.levels.INFO)
 
-		-- Call your specific setup functions
-		lsp_config.setup_codelens(client, bufnr)
-		lsp_config.setup_inlay_hints(client, bufnr)
-		lsp_config.setup_completion(client, bufnr)
-		-- lsp_config.setup_signature_help(client, bufnr)
+			-- Call your specific setup functions
+			lsp_config.setup_codelens(client, bufnr)
+			lsp_config.setup_inlay_hints(client, bufnr)
+			lsp_config.setup_completion(client, bufnr)
+			-- lsp_config.setup_signature_help(client, bufnr)
 
-		-- vim.notify("LspAttach setup finished for buffer " .. bufnr, vim.log.levels.INFO)
-	end,
-})
-
+			-- vim.notify("LspAttach setup finished for buffer " .. bufnr, vim.log.levels.INFO)
+		end,
+	})
+end
 -- =============================================================================
 -- UI and Display Autocommands                                                --
 -- =============================================================================

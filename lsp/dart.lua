@@ -1,35 +1,33 @@
--- dartls
-
----@type vim.lsp.Config
+-- -- dartls
+--
+-- ---@type vim.lsp.Config
 return {
-	cmd = { "dart", "language-server", "--protocol=lsp" },
-	filetypes = { "dart" },
-	root_markers = { "pubspec.yaml" },
-	init_options = {
-		onlyAnalyzeProjectsWithOpenFiles = true,
-		suggestFromUnimportedLibraries = true,
-		closingLabels = true,
-		outline = true,
-		flutterOutline = true,
-		allowOpenUri = true,
-	},
-	single_file_support = true,
-	settings = {
-		dart = {
-			completeFunctionCalls = true,
-			showTodos = true,
-			enableSnippets = true,
-			updateImportsOnRename = true,
-			flutterUiGuides = true,
-			-- Potentially add specific inlay hint settings here if needed,
-			-- similar to Deno, check DartLS docs. Example (might not be exact):
-			inlayHints = {
-				parameterNames = { enabled = "all" },
-				variableTypes = { enabled = true },
-				--   -- etc...
-			},
-		},
-	},
+	-- 	cmd = { "dart", "language-server", "--protocol=lsp" },
+	-- 	filetypes = { "dart" },
+	-- 	root_markers = { "pubspec.yaml" },
+	-- 	init_options = {
+	-- 		onlyAnalyzeProjectsWithOpenFiles = true,
+	-- 		suggestFromUnimportedLibraries = true,
+	-- 		closingLabels = true,
+	-- 		outline = true,
+	-- 		flutterOutline = true,
+	-- 		allowOpenUri = true,
+	-- 	},
+	-- 	single_file_support = true,
+	-- 	settings = {
+	-- 		dart = {
+	-- 			completeFunctionCalls = true,
+	-- 			showTodos = true,
+	-- 			enableSnippets = true,
+	-- 			updateImportsOnRename = true,
+	-- 			flutterUiGuides = true,
+	-- 			analysisExcludedFolders = {
+	-- 				vim.fn.expand("$HOME/AppData/Local/Pub/Cache"),
+	-- 				vim.fn.expand("$HOME/.pub-cache"),
+	-- 				vim.fn.expand("$HOME/tools/flutter/"),
+	-- 			},
+	-- 		},
+	-- },
 
 	-- Optional: Add custom handlers or setup for codelens actions
 	-- on_attach = function(client, bufnr)

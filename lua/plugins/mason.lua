@@ -1,7 +1,7 @@
 return {
 	{
 		"williamboman/mason.nvim",
-		enabled = true,
+		enabled = not vim.g.vscode,
 		cmd = "Mason",
 		event = { "BufReadPost" },
 		keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },

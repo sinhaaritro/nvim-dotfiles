@@ -28,9 +28,15 @@ local function is_adapter_required(adapter_name)
 end
 
 return {
-	{ "marilari88/neotest-vitest", cond = is_adapter_required("marilari88/neotest-vitest") },
+	{
+		"marilari88/neotest-vitest",
+		enabled = not vim.g.vscode,
+		cond = is_adapter_required("marilari88/neotest-vitest"),
+	},
+
 	{
 		"nvim-neotest/neotest",
+		enabled = not vim.g.vscode,
 		dependencies = {
 			"nvim-neotest/nvim-nio",
 			"nvim-lua/plenary.nvim",

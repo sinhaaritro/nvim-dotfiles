@@ -1,6 +1,7 @@
 return {
 	{
 		"L3MON4D3/LuaSnip",
+		enabled = not vim.g.vscode,
 		event = { "InsertEnter" }, -- Load on InsertEnter, you can change this to "VeryLazy" for faster startup
 		dependencies = {
 			"rafamadriz/friendly-snippets", -- Optional: Provides a lot of pre-made snippets

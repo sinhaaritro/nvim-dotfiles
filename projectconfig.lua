@@ -8,7 +8,7 @@ return {
 		-- "bash",
 		"lua",
 		-- "jsts_normal",
-		"deno",
-		-- "dart",
+		-- "deno",
+		-- "flutter",
 	},
 }

@@ -13,6 +13,7 @@
 return {
 	{
 		"stevearc/conform.nvim",
+		enabled = not vim.g.vscode,
 		event = { "InsertEnter" },
 		dependencies = { "williamboman/mason.nvim" },
 		cmd = "ConformInfo",

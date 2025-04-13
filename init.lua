@@ -34,7 +34,9 @@ require("config.options") -- Load general options
 
 require("config.keymaps") -- Load custom keymaps
 
-require("config.lsp")
+if not vim.g.vscode then
+	require("config.lsp")
+end
 
 -- =============================================================================
 -- Autocommands                                                               --

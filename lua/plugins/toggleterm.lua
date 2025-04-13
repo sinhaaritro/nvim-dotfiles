@@ -1,6 +1,7 @@
 return {
 	{
 		"akinsho/toggleterm.nvim",
+		enabled = not vim.g.vscode,
 		cmd = { "ToggleTerm", "TermSelect" },
 		keys = {
 			{ "<leader>T", "", desc = "+[T]erminal" },

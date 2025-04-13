@@ -1,7 +1,7 @@
 return {
 	{ --Smooth scrolling
 		"karb94/neoscroll.nvim",
-		enabled = true,
+		enabled = not vim.g.vscode,
 		event = { "BufReadPost" },
 		keys = {
 			-- Scroll half page

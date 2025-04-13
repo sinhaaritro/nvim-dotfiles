@@ -1,11 +1,12 @@
 return {
 	{
 		"folke/snacks.nvim",
+		enabled = not vim.g.vscode,
 		event = "VeryLazy",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = {
 			picker = {
-				enabled = true,
+				enabled = not vim.g.vscode,
 				explorer = {
 					replace_netrw = true,
 				},

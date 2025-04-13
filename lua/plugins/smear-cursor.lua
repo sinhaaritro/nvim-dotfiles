@@ -1,6 +1,7 @@
 return {
 	{
 		"sphamba/smear-cursor.nvim",
+		enabled = not vim.g.vscode,
 		event = "VeryLazy",
 		opts = {
 			-- Default  Range

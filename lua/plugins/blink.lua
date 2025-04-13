@@ -1,7 +1,7 @@
 return {
 	{
 		"saghen/blink.cmp",
-		enabled = true,
+		enabled = not vim.g.vscode,
 		event = { "InsertEnter" },
 		dependencies = {
 			"rafamadriz/friendly-snippets",

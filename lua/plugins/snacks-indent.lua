@@ -1,11 +1,13 @@
 return {
 	{
 		"folke/snacks.nvim",
+		enabled = not vim.g.vscode,
 		event = "VeryLazy",
 		---@type snacks.Config
 		opts = {
 			---@class snacks.indent.Config
 			indent = {
+				enabled = not vim.g.vscode,
 				indent = {
 					priority = 1,
 					enabled = false, -- enable indent guides

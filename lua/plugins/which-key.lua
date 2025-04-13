@@ -11,6 +11,7 @@
 return {
 	{
 		"folke/which-key.nvim",
+		enabled = not vim.g.vscode,
 		event = "VeryLazy",
 		opts = {
 			preset = "modern",
